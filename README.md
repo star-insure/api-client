@@ -1,4 +1,4 @@
-# Star Insure API
+# Star Insure API Client
 
 A package for Laravel apps that includes a wrapper for the Star Inure API and scaffolds out routes, controllers and middleware for authenticating with the Star auth app.
 
