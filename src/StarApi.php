@@ -16,13 +16,13 @@ class StarApi
      * @param string $auth_type (Either "app" or "user")
      * @param string $version ("v1")
      */
-    public function __construct(string $auth_type, string $version = '')
+    public function __construct(string $auth_strategy, string $version = '')
     {
         // Define our API's URL
-        $this->apiUrl = config('api.url') . '/api/' . $version ?? config('api.version');
+        $this->apiUrl = config('star-api.url') . '/api/' . $version ?? config('star-api.version');
 
         // We can interact either as an authenticated user, or as an application itself
-        $token = $auth_type === 'app' ? config('api.token') : session('access_token');
+        $token = $auth_strategy === 'app' ? config('star-api.token') : session('access_token');
 
         // Set the default headers for our API
         $this->client = Http::withHeaders([

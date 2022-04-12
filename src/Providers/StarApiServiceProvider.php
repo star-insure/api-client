@@ -33,7 +33,7 @@ class StarApiServiceProvider extends ServiceProvider
         // Register the main class to use with the facade
         $this->app->bind('starapi', function () {
             return new \StarInsure\Api\StarApi(
-                config('star-api.auth_type'),
+                config('star-api.auth_strategy'),
                 config('star-api.version')
             );
         });

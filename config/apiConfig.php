@@ -11,7 +11,7 @@ return [
      * Are we authenticating by default as a "user" or an "app"?
      * Options: "user" or "app"
      */
-    'auth_type' => env('SIS_API_AUTH_TYPE', 'app'),
+    'auth_strategy' => env('SIS_API_AUTH_STRATEGY', 'app'),
 
     /**
      * An optional long-life token provided to this app
