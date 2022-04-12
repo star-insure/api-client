@@ -15,7 +15,7 @@ class StarApiServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/apiConfig.php' => config_path('star-api.php'),
+                __DIR__.'/../../config/apiConfig.php' => config_path('star-api.php'),
             ], 'config');
         }
     }
@@ -28,7 +28,7 @@ class StarApiServiceProvider extends ServiceProvider
     public function register()
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../config/apiConfig.php', 'star-api');
+        $this->mergeConfigFrom(__DIR__.'/../../config/apiConfig.php', 'star-api');
 
         // Register the main class to use with the facade
         $this->app->bind('starapi', function () {

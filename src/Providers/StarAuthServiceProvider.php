@@ -14,11 +14,11 @@ class StarAuthServiceProvider extends ServiceProvider
      */
     public function boot(Kernel $kernel)
     {
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/authConfig.php' => config_path('star-auth.php'),
+                __DIR__.'/../../config/authConfig.php' => config_path('star-auth.php'),
             ], 'config');
         }
 
@@ -32,11 +32,11 @@ class StarAuthServiceProvider extends ServiceProvider
     public function register()
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../config/authConfig.php', 'star-auth');
+        $this->mergeConfigFrom(__DIR__.'/../../config/authConfig.php', 'star-auth');
 
         // Register the main class to use with the facade
         $this->app->singleton('star-auth', function () {
-            return new StarAuth(config('star-auth.url'), session('access_token', ''));
+            return new \StarInsure\Api\StarAuth(config('star-auth.url'), session('access_token', ''));
         });
     }
 }
