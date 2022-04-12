@@ -15,7 +15,7 @@ return [
 
     /**
      * An optional long-life token provided to this app
-     * Required if "auth_type" is "app"
+     * Required if "auth_strategy" is "app"
      */
     'token' => env('SIS_API_TOKEN', ''),
 
