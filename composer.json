@@ -1,10 +1,10 @@
 {
-    "name": "star-insurance/api-client",
-    "description": "Star Insure API",
+    "name": "star-insure/api-client",
+    "description": "Star Insure API Client",
     "keywords": [
         "star-insure"
     ],
-    "homepage": "https://gitlab.com/star-insurance/api-client",
+    "homepage": "https://github.com/star-insure/api-client",
     "license": "MIT",
     "type": "library",
     "authors": [

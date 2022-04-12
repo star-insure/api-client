@@ -7,7 +7,7 @@ A package for Laravel apps that includes a wrapper for the Star Inure API and sc
 You can install the package via composer:
 
 ```bash
-composer require star-insurance/api-client
+composer require star-insure/api-client
 ```
 
 Add these values to your `.env` file, and make sure your session driver is set to "database"
