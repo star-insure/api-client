@@ -1,6 +1,8 @@
 <?php
 
-namespace AlexClark\StarAuth\Http\Controllers;
+namespace StarInsure\Api\Http\Controllers;
+
+use Illuminate\Routing\Controller;
 
 class AuthController extends Controller
 {

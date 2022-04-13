@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use AlexClark\StarAuth\Http\Controllers\AuthController;
+use StarInsure\Api\Http\Controllers\AuthController;
 
 /**
  * Auth routes
@@ -41,8 +41,4 @@ Route::post('/auth/cb', function () {
 
     // Insert updated session payload in to the database
     DB::table('sessions')->where('id', $sessionId)->update(['payload' => $payload]);
-});
-
-Route::get('/test', function () {
-    dd('it works');
 });

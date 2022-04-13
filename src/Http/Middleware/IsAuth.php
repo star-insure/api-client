@@ -1,11 +1,11 @@
 <?php
 
-namespace AlexClark\StarAuth\Http\Middleware;
+namespace StarInsure\Api\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use AlexClark\StarAuth\StarAuth;
 use Illuminate\Auth\AuthenticationException;
+use StarInsure\Api\StarAuth;
 
 class IsAuth
 {
