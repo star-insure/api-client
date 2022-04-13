@@ -5,7 +5,7 @@ namespace StarInsure\Api\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Illuminate\Contracts\Http\Kernel;
-use AlexClark\StarAuth\Http\Middleware\IsAuth;
+use StarInsure\Api\Http\Middleware\IsAuth;
 
 class StarAuthServiceProvider extends ServiceProvider
 {
