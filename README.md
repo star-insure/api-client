@@ -14,10 +14,11 @@ Add these values to your `.env` file, and make sure your session driver is set t
 ```
 SESSION_DRIVER=database
 ...
-SIS_API_URL=
+SIS_API_URL=http://host.docker.internal:8080
 SIS_API_TOKEN=
+SIS_AUTH_STRATEGY=user|app
 
-SIS_AUTH_URL=
+SIS_AUTH_URL=http://host.docker.internal:8888
 SIS_AUTH_CLIENT_ID=
 SIS_AUTH_AFTER_LOGIN_URL=
 ```

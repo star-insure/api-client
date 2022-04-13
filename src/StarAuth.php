@@ -56,7 +56,7 @@ class StarAuth
      */
     public function get(string $endpoint, array $data = [])
     {
-        return $this->client->get($endpoint, $data);
+        return $this->call('GET', $endpoint, $data);
     }
 
     /**
@@ -67,6 +67,6 @@ class StarAuth
      */
     public function post(string $endpoint, array $data = [])
     {
-        return $this->client->post($endpoint, $data);
+        return $this->call('POST', $endpoint, $data);
     }
 }
