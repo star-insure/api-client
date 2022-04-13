@@ -56,6 +56,13 @@ class IsAuth
         session()->forget('access_token');
         session()->forget('user');
 
-        return redirect()->to(config('star-auth.url')  . $query);
+        // In local dev, we want requests to run through the Docker network, but redirects to just go through localhost
+        if (env('APP_ENV') === 'local') {
+            $url = str_replace('host.docker.internal', 'localhost', config('star-auth.url'));
+        } else {
+            $url = config('star-auth.url');
+        }
+
+        return redirect()->to($url  . $query);
     }
 }
