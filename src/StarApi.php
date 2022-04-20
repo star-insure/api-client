@@ -15,9 +15,8 @@ class StarApi
      *
      * @param string $auth_type (Either "app" or "user")
      * @param string $version ("v1")
-     * @param int $groupId (The group we're acting as to define permissions and filter results by)
      */
-    public function __construct(string $auth_strategy, string $version = '', int $groupId = null)
+    public function __construct(string $auth_strategy, string $version = '')
     {
         // Define our API's URL
         $this->apiUrl = config('star-api.url') . '/api/' . $version ?? config('star-api.version');
@@ -31,8 +30,9 @@ class StarApi
         ];
 
         // Conditionally attach the group ID as a header
-        if ($groupId) {
-            $headers['X-Group-Id'] = $groupId;
+        // This will define permissions and filter results in the API
+        if (($group = session('group')) && key_exists('id', $group)) {
+            $headers['X-Group-Id'] = $group['id'];
         }
 
         // Set the default headers for our API
