@@ -26,7 +26,7 @@ class IsAuth
                 return $this->fail();
             }
 
-            $next($request);
+            return $next($request);
         } catch (AuthenticationException $e) {
             // If failed, redirect to the authenticator app
             return $this->fail();
