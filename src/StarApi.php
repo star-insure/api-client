@@ -63,8 +63,11 @@ class StarApi
         // Make the request
         $res = $this->client->$method($url, $data);
 
+        // Body may not exist for empty content responses (e.g. on DELETE requests)
+        $body = $res->json() ?? [];
+
         // Return a JSON response, along with the status code and OK status
-        return $res->json() + ['status' => $res->status(), 'ok' => $res->ok()];
+        return [...$body, 'status' => $res->status(), 'ok' => $res->ok()];
     }
 
     /**
