@@ -47,7 +47,7 @@ class StarApi
      * @param array $data (The data to send to the endpoint)
      * @return mixed (json response)
      */
-    public function call(string $method = 'GET', string $endpoint, array $data = [])
+    public function call(string $method, string $endpoint, array $data = [])
     {
         // Always prefix endpoints with a slash
         $url = $this->apiUrl . '/' . trim($endpoint, '/');
