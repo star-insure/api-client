@@ -24,7 +24,7 @@ class StarAuth
      * @return mixed (json response)
      * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function call(string $method = 'GET', string $endpoint, array $data = [])
+    public function call(string $method, string $endpoint, array $data = [])
     {
         // Always prefix endpoints with a slash
         $url = $this->baseUrl . '/' . trim($endpoint, '/');
