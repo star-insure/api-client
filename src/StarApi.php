@@ -15,8 +15,9 @@ class StarApi
      *
      * @param string $auth_type (Either "app" or "user")
      * @param string $version ("v1")
+     * @param int $groupId (The group we're acting as to define permissions and filter results by)
      */
-    public function __construct(string $auth_strategy, string $version = '')
+    public function __construct(string $auth_strategy, string $version = '', int $groupId = null)
     {
         // Define our API's URL
         $this->apiUrl = config('star-api.url') . '/api/' . $version ?? config('star-api.version');
@@ -24,11 +25,18 @@ class StarApi
         // We can interact either as an authenticated user, or as an application itself
         $token = $auth_strategy === 'app' ? config('star-api.token') : session('access_token');
 
-        // Set the default headers for our API
-        $this->client = Http::withHeaders([
+        $headers = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-        ])->withToken($token);
+        ];
+
+        // Conditionally attach the group ID as a header
+        if ($groupId) {
+            $headers['X-Group-Id'] = $groupId;
+        }
+
+        // Set the default headers for our API
+        $this->client = Http::withHeaders($headers)->withToken($token);
     }
 
     /**
@@ -53,7 +61,10 @@ class StarApi
         };
 
         // Make the request
-        return $this->client->$method($url, $data)->json();
+        $res = $this->client->$method($url, $data);
+
+        // Return a JSON response, along with the status code and OK status
+        return $res->json() + ['status' => $res->status(), 'ok' => $res->ok()];
     }
 
     /**
