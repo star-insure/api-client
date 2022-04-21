@@ -66,6 +66,11 @@ class StarApi
         // Body may not exist for empty content responses (e.g. on DELETE requests)
         $body = $res->json() ?? [];
 
+        // Don't attach any additional headers if the API request was proxied
+        if ($res->header('X-Proxied')) {
+            return $body;
+        }
+
         // Return a JSON response, along with the status code and OK status
         return [...$body, 'status' => $res->status(), 'ok' => $res->ok()];
     }
