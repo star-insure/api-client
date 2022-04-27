@@ -33,7 +33,6 @@ class IsAuth
         }
 
         // Save our details in a session
-        session(['user' => $user]);
         session(['access_token' => $accessToken]);
 
         return $next($request);
@@ -54,7 +53,6 @@ class IsAuth
 
         // Forget session data
         session()->forget('access_token');
-        session()->forget('user');
 
         // In local dev, we want requests to run through the Docker network, but redirects to just go through localhost
         if (env('APP_ENV') === 'local') {

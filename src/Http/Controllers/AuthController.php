@@ -14,7 +14,6 @@ class AuthController extends Controller
     public function logout()
     {
         // Forget session data
-        session()->forget('user');
         session()->forget('access_token');
 
         // Redirect through the auth app
