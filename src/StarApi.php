@@ -29,10 +29,20 @@ class StarApi
             'Accept' => 'application/json',
         ];
 
-        // Conditionally attach the group ID as a header
-        // This will define permissions and filter results in the API
-        if (($group = session('group')) && key_exists('id', $group)) {
-            $headers['X-Group-Id'] = $group['id'];
+        /**
+         * Conditionally attach the group ID as a header
+         * This will define permissions and filter results in the API
+         * Apps with the auth strategy set to "user" will have this in their session
+         * Apps with the auth strategy set to "app" will have this as an environment variable
+         */
+        if ($auth_strategy === 'user') {
+            if (($group = session('group')) && key_exists('id', $group)) {
+                $headers['X-Group-Id'] = $group['star-api.group_id'];
+            }
+        }
+
+        if ($auth_strategy === 'app') {
+            $headers['X-Group-Id'] = config('api.group_id', '2');
         }
 
         // Set the default headers for our API
