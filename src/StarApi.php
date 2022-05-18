@@ -37,7 +37,7 @@ class StarApi
          */
         if ($auth_strategy === 'user') {
             if (($group = session('group')) && key_exists('id', $group)) {
-                $headers['X-Group-Id'] = $group['star-api.group_id'];
+                $headers['X-Group-Id'] = $group['id'];
             }
         }
 
