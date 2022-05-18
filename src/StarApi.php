@@ -42,7 +42,7 @@ class StarApi
         }
 
         if ($auth_strategy === 'app') {
-            $headers['X-Group-Id'] = config('api.group_id', '2');
+            $headers['X-Group-Id'] = config('star-api.group_id', '2');
         }
 
         // Set the default headers for our API
