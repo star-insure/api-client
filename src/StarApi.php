@@ -36,8 +36,8 @@ class StarApi
          * Apps with the auth strategy set to "app" will have this as an environment variable
          */
         if ($auth_strategy === 'user') {
-            if (($group = session('group')) && key_exists('id', $group)) {
-                $headers['X-Group-Id'] = $group['id'];
+            if (($groupId = session('groupId'))) {
+                $headers['X-Group-Id'] = $groupId;
             }
         }
 
