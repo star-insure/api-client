@@ -14,11 +14,12 @@ Add these values to your `.env` file, and make sure your session driver is set t
 ```
 SESSION_DRIVER=database
 ...
-SIS_API_URL=http://host.docker.internal:8080
+SIS_API_URL=http://api.starinsure.test
 SIS_API_TOKEN=
-SIS_AUTH_STRATEGY=user|app
+SIS_API_AUTH_STRATEGY=user|app
+SIS_API_GROUP_ID=
 
-SIS_AUTH_URL=http://host.docker.internal:8888
+SIS_AUTH_URL=http://auth.starinsure.test
 SIS_AUTH_CLIENT_ID=
 SIS_AUTH_AFTER_LOGIN_URL=
 ```
@@ -39,9 +40,8 @@ This is required so the auth server can make POST requests to this callback endp
 
 ### Publish config:
 ```bash
-php artisan vendor:publish
+php artisan vendor:publish --tag=starinsure
 ```
-And select the corresponding number for this package.
 
 ## Usage
 
@@ -49,6 +49,15 @@ And select the corresponding number for this package.
 Call the Star API by instantiating a new client, or using the `StarInsure\Api\Facades\StarApi` facade.
 ```php
 StarApi::get('/users/me');
+StarApi::get('/users');
+```
+
+**Or for ultimate comfort** you can create a `helpers.php` file and add the following function:
+```php
+function api()
+{
+    return new \StarInsure\Api\StarApi(config('star-api.auth_strategy'), 'v1');
+}
 ```
 
 ### Auth

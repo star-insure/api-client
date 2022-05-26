@@ -16,7 +16,7 @@ class StarApiServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../../config/apiConfig.php' => config_path('star-api.php'),
-            ], 'config');
+            ], 'starinsure');
         }
     }
 

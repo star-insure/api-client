@@ -19,7 +19,7 @@ class StarAuthServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../../config/authConfig.php' => config_path('star-auth.php'),
-            ], 'config');
+            ], 'starinsure');
         }
 
         $router = $this->app->make(Router::class);
