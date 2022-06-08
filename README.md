@@ -52,14 +52,6 @@ StarApi::get('/users/me');
 StarApi::get('/users');
 ```
 
-**Or for ultimate comfort** you can create a `helpers.php` file and add the following function:
-```php
-function api()
-{
-    return new \StarInsure\Api\StarApi(config('star-api.auth_strategy'), 'v1');
-}
-```
-
 ### Auth
 Just protect a route with middleware. Middleware and routes are automatically registered within the package.
 ```php
@@ -78,3 +70,63 @@ Route::middleware(['auth.star'])->group(function () {
 ```
 
 The user will automatically be redirected to the auth server if no valid session, and sent back to their request destination after successfully logging in.
+
+### Helper functions
+Following the Laravel style, you also have the option of using helper functions. To register the auth helper so it overrides Laravel's built-in `auth()` functions, follow the steps below.
+
+This package has a dependency on `funkjedi/composer-include-files`, which allows you to load your own functions prior to any of your dependencies global functions.
+
+Create a `helpers.php` file within the `app` directory (or edit your existing one):
+```php
+/**
+ * Global helper to create an instance of the StarApi client
+ */
+function api()
+{
+    return new \StarInsure\Api\StarApi(
+        config('star-api.auth_strategy'),
+        config('star-api.version')
+    );
+}
+
+/**
+ * Global helper to access details about the authenticated user
+ */
+function auth()
+{
+    return new \StarInsure\Api\Helpers\AuthHelper();
+}
+```
+
+Autoload your helpers file in `composer.json`:
+```json
+"autoload": {
+    ...
+    "files": [
+        "app/helpers.php"
+    ]
+},
+```
+
+Add/Edit the "extra" block in `composer.json`:
+```json
+"extra": {
+    "laravel": {
+        "dont-discover": []
+    },
+    "include_files": [
+        "app/helpers.php"
+    ]
+},
+```
+
+You can now use the global helper functions and not worry about namespaces/imports.
+```php
+$user = auth()->user();
+$id = auth()->id();
+$group = auth()->group();
+$permissions = auth()->permissions();
+$audience = auth()->audience();
+
+$apiResponse = api()->get('users/me', [ 'include' => 'groups' ]);
+```
