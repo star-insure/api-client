@@ -14,15 +14,19 @@ class AuthHelper
             config('star-api.version')
         );
 
-        $res = $api->get('users/me', [
-            'include' => 'groups',
-        ]);
+        $token = session('access_token');
 
-        if (key_exists('data', $res)) {
-            return $res['data'];
-        }
+        return cache()->remember("user:{$token}", now()->addSeconds(config('star-auth.cache_user', 5)), function () use ($api) {
+            $res = $api->get('users/me', [
+                'include' => 'groups',
+            ]);
 
-        return null;
+            if (key_exists('data', $res)) {
+                return $res['data'];
+            }
+
+            return null;
+        });
     }
 
     /**

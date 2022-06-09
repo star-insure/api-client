@@ -20,11 +20,15 @@ class IsAuth
 
         try {
             // Attempt to hit the auth server with the provided tokens
-            $user = (new StarAuth(config('star-auth.url'), $accessToken))->get('/me');
+            cache()->remember("user:{$accessToken}", now()->addSeconds(config('star-auth.cache_user', 5)), function () use ($accessToken) {
+                $user = (new StarAuth(config('star-auth.url'), $accessToken))->get('/me');
 
-            if (!$user) {
-                return $this->fail();
-            }
+                if (!$user) {
+                    return $this->fail();
+                }
+
+                return $user;
+            });
 
             return $next($request);
         } catch (AuthenticationException $e) {

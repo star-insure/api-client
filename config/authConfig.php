@@ -15,4 +15,9 @@ return [
      * Optional URL to redirect to after login
      */
     'dashboard_url' => env('SIS_AUTH_AFTER_LOGIN_URL', config('app.url')),
+
+    /**
+     * How long (in seconds) do we want to cache the authenticated user
+     */
+    'cache_user' => env('SIS_AUTH_CACHE_USER', 5),
 ];
