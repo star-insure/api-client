@@ -18,7 +18,7 @@ class AuthHelper
 
         return cache()->remember("user:{$token}", now()->addSeconds(config('star-auth.cache_user', 5)), function () use ($api) {
             $res = $api->get('users/me', [
-                'include' => 'groups',
+                'include' => 'groups,groups.role,groups.role.permissions',
             ]);
 
             if (key_exists('data', $res)) {
@@ -115,7 +115,7 @@ class AuthHelper
     public function permissions()
     {
         if ($group = $this->group()) {
-            return collect($group['permissions'])->map(fn ($p) => $p['name']);
+            return collect($group['role']['permissions'] ?? [])->map(fn ($p) => $p['name']);
         }
 
         return collect([]);
@@ -127,9 +127,25 @@ class AuthHelper
     public function audience()
     {
         if ($group = $this->group()) {
-            return $group['role']['name'];
-        }
+            $roleName = $group['role']['name'];
 
-        return '';
+            if (str_contains($roleName, 'broker')) {
+                return 'broker';
+            }
+
+            if (str_contains($roleName, 'agent')) {
+                return 'agent';
+            }
+
+            if (str_contains($roleName, 'administrator')) {
+                return 'administrator';
+            }
+
+            if (str_contains($roleName, 'staff')) {
+                return 'staff';
+            }
+
+            return 'customer';
+        }
     }
 }
