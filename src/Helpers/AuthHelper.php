@@ -145,7 +145,7 @@ class AuthHelper
                 return 'staff';
             }
 
-            return 'customer';
+            return null;
         }
     }
 }
