@@ -16,13 +16,14 @@ class StarApi
      * @param string $auth_type (Either "app" or "user")
      * @param string $version ("v1")
      */
-    public function __construct(string $auth_strategy, string $version = '')
+    public function __construct(string $auth_strategy, string $version = '', string|null $apiTokenOverride = null, int|null $groupIdOverride = null)
     {
         // Define our API's URL
         $this->apiUrl = config('star-api.url') . '/api/' . $version ?? config('star-api.version');
 
         // We can interact either as an authenticated user, or as an application itself
-        $token = $auth_strategy === 'app' ? config('star-api.token') : session('access_token');
+        // We first look for a token being passed in, then fall back to config and sessions
+        $token = $apiTokenOverride ?? $auth_strategy === 'app' ? config('star-api.token') : session('access_token');
 
         $headers = [
             'Content-Type' => 'application/json',
@@ -36,13 +37,18 @@ class StarApi
          * Apps with the auth strategy set to "app" will have this as an environment variable
          */
         if ($auth_strategy === 'user') {
-            if (($groupId = session('groupId'))) {
-                $headers['X-Group-Id'] = $groupId;
+            if (session('group_id')) {
+                $headers['X-Group-Id'] = session('group_id');
             }
         }
 
         if ($auth_strategy === 'app') {
             $headers['X-Group-Id'] = config('star-api.group_id', '2');
+        }
+
+        // If a groupId Override was passed in, we'll use that instead of the default
+        if ($groupIdOverride) {
+            $headers['X-Group-Id'] = $groupIdOverride;
         }
 
         // Set the default headers for our API
