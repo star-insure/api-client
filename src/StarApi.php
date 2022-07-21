@@ -15,6 +15,8 @@ class StarApi
      *
      * @param string $auth_type (Either "app" or "user")
      * @param string $version ("v1")
+     * @param string|null $apiTokenOverride ("JWT")
+     * @param string|int|null $groupIdOverride (2)
      */
     public function __construct(string $auth_strategy, string $version = '', string|null $apiTokenOverride = null, int|null $groupIdOverride = null)
     {
