@@ -58,7 +58,7 @@ class AuthHelper
      */
     public function group()
     {
-        if ($groupId = session('groupId')) {
+        if ($groupId = session('group_id')) {
             return $this->groups()->firstWhere('id', $groupId);
         }
 
@@ -67,18 +67,18 @@ class AuthHelper
         if (count($groups) > 0) {
             // If we have an administrator group, that should take priority
             if ($adminGroup = $groups->firstWhere('role.name', 'administrator')) {
-                session(['groupId' => $adminGroup['id']]);
+                session(['group_id' => $adminGroup['id']]);
                 return $adminGroup;
             };
 
             // Second priority is staff
             if ($staffGroup = $groups->firstWhere('role.name', 'staff')) {
-                session(['groupId' => $staffGroup['id']]);
+                session(['group_id' => $staffGroup['id']]);
                 return $staffGroup;
             };
 
             // Fall back to the first group (most brokers and agents only have one anyway)
-            session(['groupId' => $groups[0]['id']]);
+            session(['group_id' => $groups[0]['id']]);
             return $groups[0];
         }
 
