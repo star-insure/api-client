@@ -24,8 +24,11 @@ class StarApi
         $this->apiUrl = config('star-api.url') . '/api/' . $version ?? config('star-api.version');
 
         // We can interact either as an authenticated user, or as an application itself
-        // We first look for a token being passed in, then fall back to config and sessions
-        $token = $apiTokenOverride ?? $auth_strategy === 'app' ? config('star-api.token') : session('access_token');
+        // We first look for a token in the session (user), then manual override (queued job), and lastly config (app env variable)
+        $token = session('access_token') ?? $apiTokenOverride ?? config('star-api.token');
+
+        // If we're going ahead with a token from the session, we're interacting as a user
+        $auth_strategy = session('access_token') ? 'user' : $auth_strategy;
 
         $headers = [
             'Content-Type' => 'application/json',
