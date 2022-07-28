@@ -25,6 +25,7 @@ class AuthHelper
                 return $res['data'];
             }
 
+            session()->forget('access_token');
             return null;
         });
     }
