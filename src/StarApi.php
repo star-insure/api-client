@@ -93,7 +93,7 @@ class StarApi
         }
 
         // Return a JSON response, along with the status code and OK status
-        return [...$body, 'status' => $res->status(), 'ok' => $res->ok()];
+        return [...$body, 'status' => $res->status(), 'ok' => $res->successful()];
     }
 
     /**
