@@ -17,6 +17,7 @@ class AuthController extends Controller
         $accessToken = session('access_token');
         session()->forget('access_token');
         cache()->forget("user:{$accessToken}");
+        session()->forget('group_id');
 
         // Redirect through the auth app
         return redirect()->to($this->authAppUrl() . '/logout' . '?redirectUrl=' . config('app.url'));
