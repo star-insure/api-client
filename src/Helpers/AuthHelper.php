@@ -123,9 +123,9 @@ class AuthHelper
     }
 
     /**
-     * Get the current group's audience
+     * Get the current group's user context
      */
-    public function audience()
+    public function context()
     {
         if ($group = $this->group()) {
             $roleName = $group['role']['name'];
@@ -138,7 +138,7 @@ class AuthHelper
                 return 'agent';
             }
 
-            if (str_contains($roleName, 'administrator')) {
+            if (str_contains($roleName, 'admin')) {
                 return 'administrator';
             }
 
@@ -146,7 +146,11 @@ class AuthHelper
                 return 'staff';
             }
 
-            return null;
+            if (str_contains($roleName, 'security')) {
+                return 'security';
+            }
+
+            return 'customer';
         }
     }
 }
