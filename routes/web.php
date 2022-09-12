@@ -2,13 +2,6 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use StarInsure\Api\Http\Controllers\AuthController;
-
-/**
- * Auth routes
- */
-Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
-Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 /**
  * Route for handling POST webhooks from the auth server
