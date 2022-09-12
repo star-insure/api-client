@@ -13,14 +13,21 @@ class AuthController extends Controller
 
     public function logout()
     {
-        // Forget session data
+        // Clear any cached user data
         $accessToken = session('access_token');
-        session()->forget('access_token');
-        cache()->forget("user:{$accessToken}");
-        session()->forget('group_id');
+        if ($accessToken) {
+            cache()->forget("user:{$accessToken}");
+        }
+
+        // Flush session data
+        session()->flush();
+
+        // Clear cookies
+        cookie('access_token', null, -1);
+        cookie('refresh_token', null, -1);
 
         // Redirect through the auth app
-        return redirect()->to($this->authAppUrl() . '/logout' . '?redirectUrl=' . config('app.url'));
+        return redirect()->to($this->authAppUrl());
     }
 
     public function authAppUrl()
