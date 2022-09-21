@@ -128,7 +128,13 @@ class AuthHelper
     public function context()
     {
         if ($group = $this->group()) {
-            $roleName = $group['role']['name'];
+            $role = $group['role'];
+
+            if (key_exists('context', $role)) {
+                return $role['context'];
+            }
+
+            $roleName = $role['name'];
 
             if (str_contains($roleName, 'broker')) {
                 return 'broker';
