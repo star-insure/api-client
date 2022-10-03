@@ -48,6 +48,12 @@ class AuthHelper
     public function groups()
     {
         if ($user = $this->user()) {
+            if (! key_exists('groups', $user)) {
+                // If the "groups" key doesn't exist, the session has been invalidated. We'll need to refresh the user.
+                cache()->forget("user:" . session('access_token'));
+                $user = $this->user();
+            }
+
             return collect($user['groups']);
         }
 
