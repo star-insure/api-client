@@ -72,17 +72,20 @@ class AuthHelper
         $groups = $this->groups();
 
         if (count($groups) > 0) {
-            // If we have an administrator group, that should take priority
-            if ($adminGroup = $groups->firstWhere('role.name', 'administrator')) {
-                session(['group_id' => $adminGroup['id']]);
-                return $adminGroup;
-            };
+            $defaultGroup = $groups->filter(function ($group) {
+                if (\str($group['name'])->lower()->contains('administrator')) {
+                    return true;
+                }
 
-            // Second priority is staff
-            if ($staffGroup = $groups->firstWhere('role.name', 'staff')) {
-                session(['group_id' => $staffGroup['id']]);
-                return $staffGroup;
-            };
+                if (\str($group['name'])->lower()->contains('staff')) {
+                    return true;
+                }
+            })->first();
+
+            if ($defaultGroup) {
+                session(['group_id' => $defaultGroup['id']]);
+                return $defaultGroup;
+            }
 
             // Fall back to the first group (most brokers and agents only have one anyway)
             session(['group_id' => $groups[0]['id']]);
