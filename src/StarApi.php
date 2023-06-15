@@ -9,6 +9,7 @@ class StarApi
 {
     private $apiUrl;
     private $client;
+    private $timeout = 10;
 
     /**
      * Constructor for an API instance
@@ -57,7 +58,9 @@ class StarApi
         }
 
         // Set the default headers for our API
-        $this->client = Http::withHeaders($headers)->withToken($token);
+        $this->client = Http::withHeaders($headers)
+            ->withToken($token)
+            ->timeout($this->timeout);
     }
 
     /**
@@ -82,7 +85,9 @@ class StarApi
         };
 
         // Make the request
-        $res = $this->client->$method($url, $data);
+        $res = $this->client
+            ->timeout($this->timeout)
+            ->$method($url, $data);
 
         // Body may not exist for empty content responses (e.g. on DELETE requests)
         $body = $res->json() ?? [];
@@ -141,5 +146,15 @@ class StarApi
     public function del(string $endpoint)
     {
         return $this->call('DELETE', $endpoint);
+    }
+
+    /**
+     * Set the timeout for the API request
+     */
+    public function timeout(int $seconds): self
+    {
+        $this->timeout = $seconds;
+
+        return $this;
     }
 }
