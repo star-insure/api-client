@@ -3,8 +3,9 @@
 namespace StarInsure\Api\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use StarInsure\Api\StarAuthManager;
 
-class StarApiServiceProvider extends ServiceProvider
+class StarServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
@@ -15,7 +16,7 @@ class StarApiServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../../config/apiConfig.php' => config_path('star-api.php'),
+                __DIR__.'/../../config/starConfig.php' => config_path('star.php'),
             ], 'starinsure');
         }
     }
@@ -28,14 +29,19 @@ class StarApiServiceProvider extends ServiceProvider
     public function register()
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../../config/apiConfig.php', 'star-api');
+        $this->mergeConfigFrom(__DIR__.'/../../config/starConfig.php', 'star');
 
         // Register the main class to use with the facade
         $this->app->bind('starapi', function () {
             return new \StarInsure\Api\StarApi(
-                config('star-api.auth_strategy'),
-                config('star-api.version')
+                config('star.auth_strategy'),
+                config('star.version')
             );
+        });
+
+        // Register the auth manager
+        $this->app->singleton('auth', function ($app) {
+            return new StarAuthManager($app);
         });
     }
 }

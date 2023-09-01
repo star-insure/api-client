@@ -6,40 +6,25 @@ A package for Laravel apps that includes a wrapper for the Star Inure API and sc
 
 You can install the package via composer:
 
-```bash
+```sh
 composer require star-insure/api-client
 ```
 
-Add these values to your `.env` file, and make sure your session driver is set to "database"
-```
-SESSION_DRIVER=database
-...
+Add these values to your `.env` file:
+```sh
+# API
 SIS_API_URL=http://api.starinsure.test
-SIS_API_TOKEN=
 SIS_API_AUTH_STRATEGY=user|app
-SIS_API_GROUP_ID=
+SIS_API_TOKEN=
+SIS_API_GROUP_ID=2
 
-SIS_AUTH_URL=http://auth.starinsure.test
-SIS_AUTH_CLIENT_ID=
-SIS_AUTH_AFTER_LOGIN_URL=
+# OAuth client
+APP_CLIENT_ID=app_name
+APP_CLIENT_SECRET=secret
 ```
-
-Run this command to create the sessions table in your database
-```
-php artisan session:table && php artisan migrate
-```
-
-### CSRF protection
-Disable CSRF protection for the webhook route in `app\Http\Middleware\VerifyCsrfToken.php`
-```php
-protected $except = [
-    '/auth/cb',
-];
-```
-This is required so the auth server can make POST requests to this callback endpoint, which handles modifying the user's current session.
 
 ### Publish config:
-```bash
+```sh
 php artisan vendor:publish --tag=starinsure
 ```
 
@@ -53,16 +38,16 @@ StarApi::get('/users');
 ```
 
 ### Auth
-Just protect a route with middleware. Middleware and routes are automatically registered within the package.
+Use Laravel's provided "auth" middleware.
 ```php
 Route::get('/protected', function () {
     return 'Only authenticated users can see this.';
-})->middleware('auth.star');
+})->middleware('auth');
 ```
 
 Or a route group:
 ```php
-Route::middleware(['auth.star'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/protected', function () {
         return "Only authenticated users can see this.";
     });
@@ -78,24 +63,46 @@ This package has a dependency on `funkjedi/composer-include-files`, which allows
 
 Create a `helpers.php` file within the `app` directory (or edit your existing one):
 ```php
-/**
- * Global helper to create an instance of the StarApi client
- */
-function api()
-{
-    return new \StarInsure\Api\StarApi(
-        config('star-api.auth_strategy'),
-        config('star-api.version')
-    );
+
+if (! function_exists('auth')) {
+    /**
+     * Get the available auth instance.
+     */
+    function auth(): StarInsure\Api\StarAuthManager
+    {
+        return app(\StarInsure\Api\StarAuthManager::class);
+    }
 }
 
-/**
- * Global helper to access details about the authenticated user
- */
-function auth()
-{
-    return new \StarInsure\Api\Helpers\AuthHelper();
+if (! function_exists('api')) {
+    /**
+     * Global helper to create an instance of the StarApi client.
+     */
+    function api()
+    {
+        return new \StarInsure\Api\StarApi(
+            config('star.auth_strategy'),
+            config('star.version'),
+        );
+    }
 }
+
+if (! function_exists('appApi')) {
+    /**
+     * An instance of the API client for non-authenticated routes
+     */
+    function appApi()
+    {
+        return new \StarInsure\Api\StarApi(
+            'app',
+            config('star.version'),
+            config('star.token'),
+            config('star.group_id')
+        );
+    }
+}
+
+
 ```
 
 Autoload your helpers file in `composer.json`:
@@ -108,16 +115,9 @@ Autoload your helpers file in `composer.json`:
 },
 ```
 
-Add/Edit the "extra" block in `composer.json`:
-```json
-"extra": {
-    "laravel": {
-        "dont-discover": []
-    },
-    "include_files": [
-        "app/helpers.php"
-    ]
-},
+After adding the helpers file to composer.json, you'll need to dump the autoloader
+```
+composer dump-autoload
 ```
 
 You can now use the global helper functions and not worry about namespaces/imports.
@@ -125,8 +125,9 @@ You can now use the global helper functions and not worry about namespaces/impor
 $user = auth()->user();
 $id = auth()->id();
 $group = auth()->group();
+$role = auth()->role();
 $permissions = auth()->permissions();
-$audience = auth()->audience();
+$context = auth()->context();
 
-$apiResponse = api()->get('users/me', [ 'include' => 'groups' ]);
+$apiResponse = api()->get('/users/me', [ 'include' => 'groups' ]);
 ```
