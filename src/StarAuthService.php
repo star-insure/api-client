@@ -41,7 +41,7 @@ class StarAuthService
     public function callback()
     {
         $requestState = request()->input('state');
-        $sessionState = session()->get('state');
+        $sessionState = session()->pull('state');
 
         // Check if the request state matches what's in the session
         if (! $requestState || ! $sessionState || $requestState !== $sessionState) {

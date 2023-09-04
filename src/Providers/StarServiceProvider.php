@@ -3,6 +3,7 @@
 namespace StarInsure\Api\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use StarInsure\Api\Http\Middleware\StarAuth;
 use StarInsure\Api\StarAuthManager;
 
 class StarServiceProvider extends ServiceProvider
@@ -22,6 +23,9 @@ class StarServiceProvider extends ServiceProvider
                 __DIR__.'/../../routes/oauth.php' => base_path('routes/oauth.php'),
             ], 'starinsure');
         }
+
+        $router = $this->app->make(Router::class);
+        $router->aliasMiddleware('auth.star', StarAuth::class);
     }
 
     /**

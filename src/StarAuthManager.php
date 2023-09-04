@@ -42,6 +42,19 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     }
 
     /**
+     * An extension to the Laravel Auth::check() method that also
+     * checks if the user is authenticated within the API
+     */
+    public function check(): bool
+    {
+        if (! session()->has('access_token')) {
+            return false;
+        }
+
+        return $this->user() !== null;
+    }
+
+    /**
      * The groups that the authenticated user belongs to
      */
     public function groups()
