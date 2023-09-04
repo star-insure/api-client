@@ -3,6 +3,7 @@
 namespace StarInsure\Api\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
 use StarInsure\Api\Http\Middleware\StarAuth;
 use StarInsure\Api\StarAuthManager;
 
