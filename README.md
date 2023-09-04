@@ -15,7 +15,7 @@ Add these values to your `.env` file:
 # API
 SIS_API_URL=http://api.starinsure.test
 SIS_API_AUTH_STRATEGY=user|app
-SIS_API_TOKEN=
+SIS_API_TOKEN=dev
 SIS_API_GROUP_ID=2
 
 # OAuth client
