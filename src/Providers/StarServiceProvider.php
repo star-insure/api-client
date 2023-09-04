@@ -32,7 +32,7 @@ class StarServiceProvider extends ServiceProvider
     public function register()
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../../config/starConfig.php', 'star');
+        $this->mergeConfigFrom(__DIR__.'/../../config/star.php', 'star');
 
         // Register the main class to use with the facade
         $this->app->bind('starapi', function () {
