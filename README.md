@@ -19,8 +19,8 @@ SIS_API_TOKEN=dev
 SIS_API_GROUP_ID=2
 
 # OAuth client
-APP_CLIENT_ID=app_name
-APP_CLIENT_SECRET=secret
+SIS_API_CLIENT_ID=app
+SIS_API_CLIENT_SECRET=secret
 ```
 
 ### Publish config:

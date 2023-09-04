@@ -36,7 +36,7 @@ return [
     'client_id' => env('SIS_API_CLIENT_ID'),
 
     /**
-     * ID of the client app we're using
+     * Secret of the client app we're using
      */
-    'client_id' => env('SIS_API_CLIENT_SECRET', 'secret'),
+    'client_secret' => env('SIS_API_CLIENT_SECRET', 'secret'),
 ];

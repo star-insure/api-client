@@ -23,7 +23,7 @@ class StarAuthService
 
         // Build the query string
         $query = http_build_query([
-            'client_id' => config('app.client_id'),
+            'client_id' => config('star.client_id'),
             'redirect_uri' => route('auth.callback'),
             'response_type' => 'code',
             'scope' => '',
@@ -53,8 +53,8 @@ class StarAuthService
             "{$this->authServerUrl}/oauth/token",
             [
                 'grant_type' => 'authorization_code',
-                'client_id' => config('app.client_id'),
-                'client_secret' => config('app.client_secret'),
+                'client_id' => config('star.client_id'),
+                'client_secret' => config('star.client_secret'),
                 'redirect_uri' => route('auth.callback'),
                 'code' => request()->input('code'),
             ]
