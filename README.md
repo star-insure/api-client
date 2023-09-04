@@ -76,7 +76,10 @@ if (! function_exists('auth')) {
      */
     function auth(): StarInsure\Api\StarAuthManager
     {
-        return app(\StarInsure\Api\StarAuthManager::class);
+        return new \StarInsure\Api\StarAuthManager(
+            app(),
+            config('star.api_url'),
+        );
     }
 }
 
