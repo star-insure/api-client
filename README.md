@@ -78,7 +78,7 @@ if (! function_exists('auth')) {
     {
         return new \StarInsure\Api\StarAuthManager(
             app(),
-            config('star.api_url'),
+            config('star.api_url').'/api/'.config('star.version'),
         );
     }
 }
