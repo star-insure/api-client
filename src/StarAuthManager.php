@@ -25,7 +25,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             $res = \Illuminate\Support\Facades\Http::withHeaders([
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer '.$token,
-            ])->get("{$this->apiUrl}/api/v1/users/me", [
+            ])->get("{$this->apiUrl}/users/me", [
                 'include' => 'groups,groups.role,groups.role.permissions',
             ]);
 
