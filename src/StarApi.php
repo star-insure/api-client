@@ -8,8 +8,15 @@ use Illuminate\Support\Facades\Http;
 class StarApi
 {
     private $apiUrl;
+
     private $client;
+
     private $timeout = 10;
+
+    private $headers = [
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json',
+    ];
 
     /**
      * Constructor for an API instance
@@ -31,10 +38,7 @@ class StarApi
         // If we're going ahead with a token from the session, we're interacting as a user
         $auth_strategy = session('access_token') ? 'user' : $auth_strategy;
 
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ];
+        $headers = $this->headers;
 
         /**
          * Conditionally attach the group ID as a header
@@ -154,6 +158,17 @@ class StarApi
     public function timeout(int $seconds): self
     {
         $this->timeout = $seconds;
+
+        return $this;
+    }
+
+
+    /**
+     * Set the headers for the API request
+     */
+    public function headers(array $headers = [])
+    {
+        $this->headers = array_merge($this->headers, $headers);
 
         return $this;
     }
