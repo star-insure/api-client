@@ -2,6 +2,7 @@
 
 namespace StarInsure\Api;
 
+use Illuminate\Support\Facades\Http;
 use StarInsure\Api\Models\StarUser;
 
 class StarAuthService
@@ -40,7 +41,7 @@ class StarAuthService
     public function callback()
     {
         $requestState = request()->input('state');
-        $sessionState = session()->pull('state');
+        $sessionState = session()->get('state');
 
         // Check if the request state matches what's in the session
         if (! $requestState || ! $sessionState || $requestState !== $sessionState) {
@@ -105,5 +106,23 @@ class StarAuthService
 
         // return redirect(route('home'));
         return redirect()->intended();
+    }
+
+    /**
+     * Revoke all access tokens for the user (log out).
+     */
+    public function revokeAll(?string $redirectUri = null)
+    {
+        // Make the request to revoke tokens
+        Http::withToken(session('access_token'))
+            ->post("{$this->authServerUrl}/api/v1/auth/revoke", [
+                'all' => true,
+            ]);
+
+        // Flush the session
+        session()->flush();
+
+        // Redirect to the given URI or the app's URL
+        return redirect($redirectUri ?? config('app.url'));
     }
 }

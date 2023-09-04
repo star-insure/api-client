@@ -16,7 +16,10 @@ class StarServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
+                // Publish config
                 __DIR__.'/../../config/starConfig.php' => config_path('star.php'),
+                // Publish routes to the application so sessions can be used
+                __DIR__.'/../../routes/oauth.php' => base_path('routes/oauth.php'),
             ], 'starinsure');
         }
     }

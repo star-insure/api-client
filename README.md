@@ -28,6 +28,12 @@ APP_CLIENT_SECRET=secret
 php artisan vendor:publish --tag=starinsure
 ```
 
+### Append routes
+Add the below line to your `/routes/web.php` file.
+```sh
+require __DIR__.'/oauth.php';
+```
+
 ## Usage
 
 ### API
