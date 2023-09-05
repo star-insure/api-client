@@ -59,17 +59,15 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function groups()
     {
-        return $this->useRequestCache('groups', function () {
-            if ($user = $this->user()) {
-                if (! array_key_exists('groups', $user)) {
-                    $user = $this->user();
-                }
-
-                return collect($user['groups']);
+        if ($user = $this->user()) {
+            if (! array_key_exists('groups', $user)) {
+                $user = $this->user();
             }
 
-            return collect([]);
-        });
+            return collect($user['groups']);
+        }
+
+        return collect([]);
     }
 
     /**
@@ -77,38 +75,36 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function group()
     {
-        return $this->useRequestCache('group', function () {
-            if ($groupId = session('group_id')) {
-                return $this->groups()->firstWhere('id', $groupId);
-            }
+        if ($groupId = session('group_id')) {
+            return $this->groups()->firstWhere('id', $groupId);
+        }
 
-            $groups = $this->groups();
+        $groups = $this->groups();
 
-            if (count($groups) > 0) {
-                $defaultGroup = $groups->filter(function ($group) {
-                    if (\str($group['name'])->lower()->contains('administrator')) {
-                        return true;
-                    }
-
-                    if (\str($group['name'])->lower()->contains('staff')) {
-                        return true;
-                    }
-                })->first();
-
-                if ($defaultGroup) {
-                    session(['group_id' => $defaultGroup['id']]);
-
-                    return $defaultGroup;
+        if (count($groups) > 0) {
+            $defaultGroup = $groups->filter(function ($group) {
+                if (\str($group['name'])->lower()->contains('administrator')) {
+                    return true;
                 }
 
-                // Fall back to the first group (most brokers and agents only have one anyway)
-                session(['group_id' => $groups[0]['id']]);
+                if (\str($group['name'])->lower()->contains('staff')) {
+                    return true;
+                }
+            })->first();
 
-                return $groups[0];
+            if ($defaultGroup) {
+                session(['group_id' => $defaultGroup['id']]);
+
+                return $defaultGroup;
             }
 
-            return null;
-        });
+            // Fall back to the first group (most brokers and agents only have one anyway)
+            session(['group_id' => $groups[0]['id']]);
+
+            return $groups[0];
+        }
+
+        return null;
     }
 
     /**
@@ -116,13 +112,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function groupId()
     {
-        return $this->useRequestCache('groupId', function () {
-            if ($group = $this->group()) {
-                return $group['id'];
-            }
+        if ($group = $this->group()) {
+            return $group['id'];
+        }
 
-            return null;
-        });
+        return null;
     }
 
     /**
@@ -130,13 +124,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function groupCode()
     {
-        return $this->useRequestCache('groupCode', function () {
-            if ($group = $this->group()) {
-                return $group['code'];
-            }
+        if ($group = $this->group()) {
+            return $group['code'];
+        }
 
-            return null;
-        });
+        return null;
     }
 
     /**
@@ -144,13 +136,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function role()
     {
-        return $this->useRequestCache('role', function () {
-            if ($group = $this->group()) {
-                return $group['role'];
-            }
+        if ($group = $this->group()) {
+            return $group['role'];
+        }
 
-            return null;
-        });
+        return null;
     }
 
     /**
@@ -158,13 +148,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function permissions()
     {
-        return $this->useRequestCache('permissions', function () {
-            if ($group = $this->group()) {
-                return collect($group['role']['permissions'] ?? [])->map(fn ($p) => $p['name']);
-            }
+        if ($group = $this->group()) {
+            return collect($group['role']['permissions'] ?? [])->map(fn ($p) => $p['name']);
+        }
 
-            return collect([]);
-        });
+        return collect([]);
     }
 
     /**
@@ -172,39 +160,37 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function context()
     {
-        return $this->useRequestCache('context', function () {
-            if ($group = $this->group()) {
-                $role = $group['role'];
+        if ($group = $this->group()) {
+            $role = $group['role'];
 
-                if (array_key_exists('context', $role)) {
-                    return $role['context'];
-                }
-
-                $roleName = $role['name'];
-
-                if (str_contains($roleName, 'broker')) {
-                    return 'broker';
-                }
-
-                if (str_contains($roleName, 'agent')) {
-                    return 'agent';
-                }
-
-                if (str_contains($roleName, 'admin')) {
-                    return 'administrator';
-                }
-
-                if (str_contains($roleName, 'staff')) {
-                    return 'staff';
-                }
-
-                if (str_contains($roleName, 'security')) {
-                    return 'security';
-                }
-
-                return 'customer';
+            if (array_key_exists('context', $role)) {
+                return $role['context'];
             }
-        });
+
+            $roleName = $role['name'];
+
+            if (str_contains($roleName, 'broker')) {
+                return 'broker';
+            }
+
+            if (str_contains($roleName, 'agent')) {
+                return 'agent';
+            }
+
+            if (str_contains($roleName, 'admin')) {
+                return 'administrator';
+            }
+
+            if (str_contains($roleName, 'staff')) {
+                return 'staff';
+            }
+
+            if (str_contains($roleName, 'security')) {
+                return 'security';
+            }
+
+            return 'customer';
+        }
     }
 
     /**
