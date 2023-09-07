@@ -104,7 +104,6 @@ class StarAuthService
         // Log in as the user (not stored in our database)
         auth()->login(new StarUser($user));
 
-        // return redirect(route('home'));
         return redirect()->intended();
     }
 
