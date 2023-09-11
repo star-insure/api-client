@@ -110,18 +110,14 @@ class StarAuthService
     /**
      * Revoke all access tokens for the user (log out).
      */
-    public function revokeAll(?string $redirectUri = null)
+    public function revokeAll()
     {
-        // Make the request to revoke tokens
-        Http::withToken(session('access_token'))
-            ->post("{$this->authServerUrl}/api/v1/auth/revoke", [
-                'all' => true,
-            ]);
+        $logoutUrl = config('star.api_url') . '/logout?return_url=' . config('app.url');
 
-        // Flush the session
-        session()->flush();
-
-        // Redirect to the given URI or the app's URL
-        return redirect($redirectUri ?? config('app.url'));
+        // Use inertia redirect for apps using Inertia
+        if (class_exists('Inertia\Inertia')) {
+            return \Inertia\Inertia::location($logoutUrl);
+        }
+        return redirect($logoutUrl);
     }
 }
