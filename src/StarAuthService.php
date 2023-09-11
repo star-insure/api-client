@@ -112,7 +112,8 @@ class StarAuthService
      */
     public function revokeAll()
     {
-        $logoutUrl = config('star.api_url') . '/logout?return_url=' . config('app.url');
+        $returnUrl = request()['return_url'] ?? config('app.url');
+        $logoutUrl = config('star.api_url') . '/logout?return_url=' . $returnUrl;
 
         // Use inertia redirect for apps using Inertia
         if (class_exists('Inertia\Inertia')) {
