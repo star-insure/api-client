@@ -75,11 +75,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function group()
     {
-        if (($groupId = session('group_id')) && $group = $this->groups()->firstWhere('id', $groupId)) {
+        $groups = $this->groups();
+
+        if (($groupId = session('group_id')) && $group = $groups->firstWhere('id', $groupId)) {
             return $group;
         }
-
-        $groups = $this->groups();
 
         if (count($groups) > 0) {
             $defaultGroup = $groups->filter(function ($group) {
