@@ -11,7 +11,7 @@ class StarApi
 
     private $client;
 
-    private $timeout = 10;
+    private $timeout = 20;
 
     private $headers = [
         'Content-Type' => 'application/json',
