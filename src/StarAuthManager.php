@@ -20,7 +20,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function user()
     {
-        return $this->useCache('user', function () {
+        return $this->useRequestCache('user', function () {
             $token = session('access_token');
 
             // Hit the API to get the user
@@ -194,19 +194,16 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     /**
      * Get the value from the request cache, or run the function and cache the result
      */
-    public function useCache(string $key, callable $func)
+    public function useRequestCache(string $key, callable $func)
     {
-        $sessionId = session()->getId();
-        $cacheKey = "{$sessionId}.{$key}";
-
-        if ($cached = cache()->store()->get($cacheKey)) {
-            return $cached;
+        if ($value = request()->get($key)) {
+            return $value;
         }
 
-        $result = $func();
+        $value = $func();
 
-        cache()->store()->put($cacheKey, $result, 60);
+        request()->merge([$key => $value]);
 
-        return $result;
+        return $value;
     }
 }
