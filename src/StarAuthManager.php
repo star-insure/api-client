@@ -196,13 +196,16 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function useCache(string $key, callable $func)
     {
-        if ($cached = cache()->store()->get($key)) {
+        $sessionKey = session()->getId().$key;
+        $cacheKey = "{$sessionKey}.{$key}";
+
+        if ($cached = cache()->store()->get($cacheKey)) {
             return $cached;
         }
 
         $result = $func();
 
-        cache()->store()->put($key, $result, 60);
+        cache()->store()->put($cacheKey, $result, 60);
 
         return $result;
     }
