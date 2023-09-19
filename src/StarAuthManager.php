@@ -4,11 +4,13 @@ namespace StarInsure\Api;
 
 class StarAuthManager extends \Illuminate\Auth\AuthManager
 {
+    protected $cache = [];
+
     public function __construct(
         $app,
         protected ?string $apiUrl = null,
     ) {
-        $this->apiUrl ??= config('star.api_url') . '/api/' . config('star.version');
+        $this->apiUrl ??= config('star.api_url').'/api/'.config('star.version');
 
         parent::__construct($app);
     }
@@ -18,12 +20,12 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function user()
     {
-        return $this->useRequestCache('user', function () {
+        return $this->useCache('user', function () {
             $token = session('access_token');
 
             // Hit the API to get the user
             $res = \Illuminate\Support\Facades\Http::withHeaders([
-                'Accept' => 'application/json',
+                'Accept'        => 'application/json',
                 'Authorization' => 'Bearer '.$token,
             ])->get("{$this->apiUrl}/users/me", [
                 'include' => 'groups,groups.role,groups.role.permissions',
@@ -32,7 +34,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             if (! $res->successful()) {
                 session()->forget('access_token');
 
-                return null;
+                return;
             }
 
             $user = $res->json('data');
@@ -104,7 +106,6 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             return $groups[0];
         }
 
-        return null;
     }
 
     /**
@@ -116,7 +117,6 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             return $group['id'];
         }
 
-        return null;
     }
 
     /**
@@ -128,7 +128,6 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             return $group['code'];
         }
 
-        return null;
     }
 
     /**
@@ -140,7 +139,6 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             return $group['role'];
         }
 
-        return null;
     }
 
     /**
@@ -196,16 +194,16 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     /**
      * Get the value from the request cache, or run the function and cache the result
      */
-    public function useRequestCache(string $key, callable $func)
+    public function useCache(string $key, callable $func)
     {
-        if ($value = request()->get($key)) {
-            return $value;
+        if ($cached = cache()->store()->get($key)) {
+            return $cached;
         }
 
-        $value = $func();
+        $result = $func();
 
-        request()->merge([$key => $value]);
+        cache()->store()->put($key, $result, 60);
 
-        return $value;
+        return $result;
     }
 }
