@@ -119,7 +119,7 @@ class StarAuthService
         $logoutUrl = config('star.api_url') . '/logout?return_url=' . $returnUrl;
 
         // Clear any cached user data in the request
-        cache()->store()->forget('user');
+        cache()->store()->forget(session()->getId() . 'user');
 
         // Use inertia redirect for apps using Inertia
         if (class_exists('Inertia\Inertia')) {
