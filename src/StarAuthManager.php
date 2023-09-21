@@ -18,7 +18,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     /**
      * The authenticated user
      */
-    public function user()
+    public function user(?bool $bypassCache = false)
     {
         return $this->useRequestCache('user', function () {
             $token = session('access_token');
@@ -40,7 +40,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             $user = $res->json('data');
 
             return $user;
-        });
+        }, $bypassCache);
     }
 
     /**
@@ -63,7 +63,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     {
         if ($user = $this->user()) {
             if (! array_key_exists('groups', $user)) {
-                $user = $this->user();
+                $user = $this->user(bypassCache: true);
             }
 
             return collect($user['groups']);
@@ -194,8 +194,12 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     /**
      * Get the value from the request cache, or run the function and cache the result
      */
-    public function useRequestCache(string $key, callable $func)
+    public function useRequestCache(string $key, callable $func, ?bool $bypass = false)
     {
+        if ($bypass) {
+            return $func();
+        }
+
         if ($value = request()->get($key)) {
             return $value;
         }
