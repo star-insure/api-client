@@ -13,6 +13,8 @@ class StarApi
 
     private $timeout = 20;
 
+    private $asRaw = false;
+
     private $headers = [
         'Content-Type' => 'application/json',
         'Accept' => 'application/json',
@@ -93,6 +95,10 @@ class StarApi
             ->timeout($this->timeout)
             ->$method($url, $data);
 
+        if ($this->asRaw) {
+            return $res;
+        }
+
         // Body may not exist for empty content responses (e.g. on DELETE requests)
         $body = $res->json() ?? [];
 
@@ -150,6 +156,16 @@ class StarApi
     public function del(string $endpoint)
     {
         return $this->call('DELETE', $endpoint);
+    }
+
+    /**
+     * Return the raw response from the API call (e.g. for file downloads)
+     */
+    public function asRaw(): self
+    {
+        $this->asRaw = true;
+
+        return $this;
     }
 
     /**
