@@ -57,6 +57,18 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     }
 
     /**
+     * The authenticated user's ID
+     */
+    public function id()
+    {
+        if ($user = $this->user()) {
+            return $user['id'];
+        }
+
+        return null;
+    }
+
+    /**
      * The groups that the authenticated user belongs to
      */
     public function groups()
