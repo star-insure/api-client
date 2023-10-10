@@ -61,11 +61,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function id()
     {
-        if ($user = $this->user()) {
-            return $user['id'];
-        }
-
-        return null;
+        return $this->user()['id'] ?? null;
     }
 
     /**
@@ -96,20 +92,44 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         }
 
         if (count($groups) > 0) {
-            $defaultGroup = $groups->filter(function ($group) {
-                if (\str($group['name'])->lower()->contains('administrator')) {
-                    return true;
+            $staffGroups = $groups->filter(fn ($group) => $group['role']['context'] === 'staff');
+
+            if ($staffGroups->isNotEmpty()) {
+                // We have an arbitrary priority with our groups, which we'll use to get our default group
+                $staffGroupPriorityByName = collect([
+                    'Administrators',
+                    'Staff - Executive',
+                    'Staff - IT',
+                    'Staff - Managers',
+                    'Staff - Accounts',
+                    'Staff - Key Account Managers',
+                    'Staff - Claims',
+                    'Staff - Direct Sales',
+                    'Staff - Assessing',
+                    'Staff - Processing',
+                ]);
+
+                $staffGroup = $staffGroupPriorityByName->reduce(function ($selectedGroup, $groupName) use ($staffGroups) {
+                    // Return early if we've already found a match
+                    if ($selectedGroup) {
+                        return $selectedGroup;
+                    }
+
+                    // Use the first group in our priority list
+                    if ($match = $staffGroups->firstWhere(fn (array $group) => $group['name'] === $groupName)) {
+                        return $match;
+                    }
+                }, null);
+
+                // If we don't have one of the "priority" staff groups, just use the first one we do have
+                if (! $staffGroup) {
+                    $staffGroup = $staffGroups->first();
                 }
 
-                if (\str($group['name'])->lower()->contains('staff')) {
-                    return true;
-                }
-            })->first();
+                // Save our group ID in the session so we can skip this logic next time
+                session(['group_id' => $staffGroup['id']]);
 
-            if ($defaultGroup) {
-                session(['group_id' => $defaultGroup['id']]);
-
-                return $defaultGroup;
+                return $staffGroup;
             }
 
             // Fall back to the first group (most brokers and agents only have one anyway)
@@ -117,7 +137,6 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
 
             return $groups[0];
         }
-
     }
 
     /**
@@ -128,7 +147,6 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         if ($group = $this->group()) {
             return $group['id'];
         }
-
     }
 
     /**
@@ -136,10 +154,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function groupCode()
     {
-        if ($group = $this->group()) {
-            return $group['code'];
-        }
-
+        return $this->group()['code'] ?? null;
     }
 
     /**
@@ -147,22 +162,15 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function role()
     {
-        if ($group = $this->group()) {
-            return $group['role'];
-        }
-
+        return $this->group()['role'] ?? null;
     }
 
     /**
-     * The permissions that apply to the current group
+     * The permissions this user inherits from all groups and roles
      */
     public function permissions()
     {
-        if ($group = $this->group()) {
-            return collect($group['role']['permissions'] ?? [])->map(fn ($p) => $p['name']);
-        }
-
-        return collect([]);
+        return collect($this->user()['permissions'] ?? []);
     }
 
     /**
@@ -170,37 +178,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function context()
     {
-        if ($group = $this->group()) {
-            $role = $group['role'];
-
-            if (array_key_exists('context', $role)) {
-                return $role['context'];
-            }
-
-            $roleName = $role['name'];
-
-            if (str_contains($roleName, 'broker')) {
-                return 'broker';
-            }
-
-            if (str_contains($roleName, 'agent')) {
-                return 'agent';
-            }
-
-            if (str_contains($roleName, 'admin')) {
-                return 'administrator';
-            }
-
-            if (str_contains($roleName, 'staff')) {
-                return 'staff';
-            }
-
-            if (str_contains($roleName, 'security')) {
-                return 'security';
-            }
-
-            return 'customer';
-        }
+        return $this->group()['role']['context'] ?? 'customer';
     }
 
     /**
