@@ -183,6 +183,30 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     }
 
     /**
+     * Check if the user is authorized to perform the specified ability
+     */
+    public function can(?string $ability = ''): bool
+    {
+        if (! $ability) {
+            return true;
+        }
+
+        return $this->permissions()->contains($ability);
+    }
+
+    /**
+     * Check if the user is NOT authorized to perform the specified ability
+     */
+    public function cannot(?string $ability = ''): bool
+    {
+        if (! $ability) {
+            return false;
+        }
+
+        return $this->permissions()->doesntContain($ability);
+    }
+
+    /**
      * Get the value from the request cache, or run the function and cache the result
      */
     public function useRequestCache(string $key, callable $func, ?bool $bypass = false)
