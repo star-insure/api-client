@@ -125,4 +125,54 @@ class StarAuthService
 
         return redirect($logoutUrl);
     }
+
+    /**
+     * Request handler to impersonate another user
+     */
+    public function impersonate()
+    {
+        abort_if(auth()->cannot('IMPERSONATE'), 403);
+
+        request()->validate([
+            'user_id' => ['required', 'integer'],
+        ]);
+
+        $res = api()->post('/impersonate', [
+            'user_id' => request()->input('user_id'),
+        ]);
+
+        if (! $res['ok']) {
+            return back()->withErrors($res['errors'] ?? $res['message'] ?? 'Unknown error');
+        }
+
+        session()->put('impersonate_id', $res['data']['id']);
+
+        // Forget the current group so we can refresh it with the new user
+        session()->forget('group_id');
+
+        // Do a full page redirect to avoid weird state
+        if (class_exists('Inertia\Inertia')) {
+            return inertia()->location('/');
+        }
+
+        return redirect('/');
+    }
+
+    /**
+     * Request handler to exit impersonation
+     */
+    public function impersonationExit()
+    {
+        session()->forget('impersonate_id');
+
+        // Forget the group_id which will have been set from the impersonated user
+        session()->forget('group_id');
+
+        // Do a full page redirect to avoid weird state
+        if (class_exists('Inertia\Inertia')) {
+            return inertia()->location('/');
+        }
+
+        return redirect('/');
+    }
 }
