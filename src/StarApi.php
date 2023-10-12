@@ -52,6 +52,11 @@ class StarApi
             if (session('group_id')) {
                 $headers['X-Group-Id'] = session('group_id');
             }
+
+            // Attach our impersonation header if we're currently impersonating
+            if (session('impersonate_id')) {
+                $headers['X-Impersonate-Id'] = session('impersonate_id');
+            }
         }
 
         if ($auth_strategy === 'app') {

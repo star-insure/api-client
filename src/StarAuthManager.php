@@ -25,8 +25,9 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
 
             // Hit the API to get the user
             $res = \Illuminate\Support\Facades\Http::withHeaders([
-                'Accept'        => 'application/json',
-                'Authorization' => 'Bearer '.$token,
+                'Accept'           => 'application/json',
+                'Authorization'    => 'Bearer '.$token,
+                'X-Impersonate-Id' => session('impersonate_id'),
             ])->get("{$this->apiUrl}/users/me", [
                 'include' => 'groups,groups.role,groups.role.permissions',
             ]);
