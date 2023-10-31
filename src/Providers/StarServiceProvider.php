@@ -4,6 +4,7 @@ namespace StarInsure\Api\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
+use StarInsure\Api\Http\Middleware\StarApiAuth;
 use StarInsure\Api\Http\Middleware\StarAuth;
 use StarInsure\Api\Http\Middleware\StarGuest;
 use StarInsure\Api\StarAuthManager;
@@ -27,7 +28,9 @@ class StarServiceProvider extends ServiceProvider
         }
 
         $router = $this->app->make(Router::class);
+
         $router->aliasMiddleware('auth.star', StarAuth::class);
+        $router->aliasMiddleware('auth.star.api', StarApiAuth::class);
         $router->aliasMiddleware('guest.star', StarGuest::class);
     }
 

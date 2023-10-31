@@ -9,8 +9,10 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     public function __construct(
         $app,
         protected ?string $apiUrl = null,
+        protected ?string $apiToken = null,
     ) {
         $this->apiUrl ??= config('star.api_url').'/api/'.config('star.version');
+        $this->apiToken = $apiToken ?? session('access_token') ?? request()->bearerToken();
 
         parent::__construct($app);
     }
@@ -21,7 +23,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     public function user(?bool $bypassCache = false)
     {
         return $this->useRequestCache('user', function () {
-            $token = session('access_token');
+            $token = $this->apiToken;
 
             // Hit the API to get the user
             $res = \Illuminate\Support\Facades\Http::withHeaders([

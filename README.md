@@ -74,11 +74,12 @@ if (! function_exists('auth')) {
     /**
      * Get the available auth instance.
      */
-    function auth(): StarInsure\Api\StarAuthManager
+    function auth(string $token = null): StarInsure\Api\StarAuthManager
     {
         return new \StarInsure\Api\StarAuthManager(
-            app(),
-            config('star.api_url').'/api/'.config('star.version'),
+            app: app(),
+            apiUrl: config('star.api_url').'/api/'.config('star.version'),
+            apiToken: $token,
         );
     }
 }
@@ -87,11 +88,12 @@ if (! function_exists('api')) {
     /**
      * Global helper to create an instance of the StarApi client.
      */
-    function api()
+    function api(string $token = null)
     {
         return new \StarInsure\Api\StarApi(
-            config('star.auth_strategy'),
-            config('star.version'),
+            auth_strategy: config('star.auth_strategy'),
+            version: config('star.version'),
+            apiTokenOverride: $token,
         );
     }
 }
