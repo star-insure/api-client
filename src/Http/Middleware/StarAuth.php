@@ -10,7 +10,7 @@ class StarAuth
 {
     public function handle(Request $request, Closure $next)
     {
-        $redirect = config('star.auth_strategy') === 'user' ? route('auth.authorize') : '/login';
+        $redirect = config('star.auth_strategy') === 'user' ? route('auth.authorize', ['returnUrl' => $request->input('returnUrl')]) : '/login';
 
         if (! session('access_token')) {
             throw new AuthenticationException('Unauthenticated.', [], $redirect);
