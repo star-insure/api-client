@@ -21,9 +21,6 @@ class StarAuthService
         // Generate a random string to use as state
         session()->put('state', $state = \str()->random(40));
 
-        // Store the intended URL in the session
-        session()->put('url.intended', request()->input('returnUrl', url()->previous()));
-
         // Build the query string
         $query = http_build_query([
             'client_id' => config('star.client_id'),
