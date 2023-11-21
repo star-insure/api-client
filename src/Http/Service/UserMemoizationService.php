@@ -13,6 +13,10 @@ class UserMemoizationService
             return $this->memoizedData;
         }
 
+        if (! $token || ! $apiUrl) {
+            return null;
+        }
+
         $data = function () use ($token, $apiUrl) {
             $res = \Illuminate\Support\Facades\Http::withHeaders([
                 'Accept'           => 'application/json',
