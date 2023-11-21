@@ -14,9 +14,7 @@ class StarAuth
             // Store the intended URL in the session
             session()->put('url.intended', $request->input('returnUrl', url()->current()));
 
-            $redirect = config('star.auth_strategy') === 'user' ? route('auth.authorize') : '/login';
-
-            throw new AuthenticationException('Unauthenticated.', [], $redirect);
+            throw new AuthenticationException('Unauthenticated.', [], route('auth.authorize'));
         }
         return $next($request);
     }
