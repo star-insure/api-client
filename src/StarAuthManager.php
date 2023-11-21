@@ -17,6 +17,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         $this->apiUrl ??= config('star.api_url').'/api/'.config('star.version');
         $this->apiToken = $apiToken ?? session('access_token') ?? request()->bearerToken();
         $this->memoizationService = $memoizationService ?? new UserMemoizationService();
+
         parent::__construct($app);
     }
 
@@ -25,11 +26,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function user(?bool $bypassCache = false)
     {
-        if ($bypassCache) {
-            $this->memoizationService->clearMemoizedData();
-        }
-
-        $data = $this->memoizationService->getData($this->apiToken, $this->apiUrl);
+        $data = $this->memoizationService->getData(
+            token: $this->apiToken,
+            apiUrl: $this->apiUrl,
+            bypass: $bypassCache,
+        );
 
         return $data;
     }
@@ -194,25 +195,5 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         }
 
         return $this->permissions()->doesntContain($ability);
-    }
-
-    /**
-     * Get the value from the request cache, or run the function and cache the result
-     */
-    public function useRequestCache(string $key, callable $func, ?bool $bypass = false)
-    {
-        if ($bypass) {
-            return $func();
-        }
-
-        if ($value = request()->get($key)) {
-            return $value;
-        }
-
-        $value = $func();
-
-        request()->merge([$key => $value]);
-
-        return $value;
     }
 }
