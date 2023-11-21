@@ -70,16 +70,16 @@ This package has a dependency on `funkjedi/composer-include-files`, which allows
 Create a `helpers.php` file within the `app` directory (or edit your existing one):
 ```php
 
-if (! function_exists('auth')) {
+// We use this helper purely to help the IDE recognise the global function's return type
+if (! function_exists('auth') && isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'ide') {
     /**
      * Get the available auth instance.
      */
-    function auth(string $token = null): StarInsure\Api\StarAuthManager
+    function auth(): StarInsure\Api\StarAuthManager
     {
         return new \StarInsure\Api\StarAuthManager(
-            app: app(),
-            apiUrl: config('star.api_url').'/api/'.config('star.version'),
-            apiToken: $token,
+            app(),
+            config('star.api_url').'/api/'.config('star.version'),
         );
     }
 }
