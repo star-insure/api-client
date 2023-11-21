@@ -7,6 +7,7 @@ use Illuminate\Routing\Router;
 use StarInsure\Api\Http\Middleware\StarApiAuth;
 use StarInsure\Api\Http\Middleware\StarAuth;
 use StarInsure\Api\Http\Middleware\StarGuest;
+use StarInsure\Api\Http\Service\UserMemoizationService;
 use StarInsure\Api\StarAuthManager;
 
 class StarServiceProvider extends ServiceProvider
@@ -54,7 +55,12 @@ class StarServiceProvider extends ServiceProvider
 
         // Register the auth manager
         $this->app->singleton('auth', function ($app) {
-            return new StarAuthManager($app);
+            return new StarAuthManager(
+                $app,
+                null,
+                null,
+                $app->make(UserMemoizationService::class)
+            );
         });
     }
 }

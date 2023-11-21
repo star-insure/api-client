@@ -2,6 +2,8 @@
 
 namespace StarInsure\Api;
 
+use StarInsure\Api\Http\Service\UserMemoizationService;
+
 class StarAuthManager extends \Illuminate\Auth\AuthManager
 {
     protected $cache = [];
@@ -10,9 +12,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         $app,
         protected ?string $apiUrl = null,
         protected ?string $apiToken = null,
+        protected ?UserMemoizationService $memoizationService = null
     ) {
         $this->apiUrl ??= config('star.api_url').'/api/'.config('star.version');
         $this->apiToken = $apiToken ?? session('access_token') ?? request()->bearerToken();
+        $this->memoizationService = $memoizationService ?? new UserMemoizationService();
 
         parent::__construct($app);
     }
@@ -22,28 +26,13 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
      */
     public function user(?bool $bypassCache = false)
     {
-        return $this->useRequestCache('user', function () {
-            $token = $this->apiToken;
+        $data = $this->memoizationService->getData(
+            token: $this->apiToken,
+            apiUrl: $this->apiUrl,
+            bypass: $bypassCache,
+        );
 
-            // Hit the API to get the user
-            $res = \Illuminate\Support\Facades\Http::withHeaders([
-                'Accept'           => 'application/json',
-                'Authorization'    => 'Bearer '.$token,
-                'X-Impersonate-Id' => session('impersonate_id'),
-            ])->get("{$this->apiUrl}/users/me", [
-                'include' => 'groups,groups.role,groups.role.permissions',
-            ]);
-
-            if (! $res->successful()) {
-                session()->forget('access_token');
-
-                return;
-            }
-
-            $user = $res->json('data');
-
-            return $user;
-        }, $bypassCache);
+        return $data;
     }
 
     /**
@@ -206,25 +195,5 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         }
 
         return $this->permissions()->doesntContain($ability);
-    }
-
-    /**
-     * Get the value from the request cache, or run the function and cache the result
-     */
-    public function useRequestCache(string $key, callable $func, ?bool $bypass = false)
-    {
-        if ($bypass) {
-            return $func();
-        }
-
-        if ($value = request()->get($key)) {
-            return $value;
-        }
-
-        $value = $func();
-
-        request()->merge([$key => $value]);
-
-        return $value;
     }
 }
