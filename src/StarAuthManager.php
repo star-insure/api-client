@@ -16,7 +16,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     ) {
         $this->apiUrl ??= config('star.api_url').'/api/'.config('star.version');
         $this->apiToken = $apiToken ?? session('access_token') ?? request()->bearerToken();
-        $this->memoizationService = $memoizationService ?? new UserMemoizationService();
+        $this->memoizationService = $memoizationService ?? new UserMemoizationService;
 
         parent::__construct($app);
     }
@@ -46,6 +46,36 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         }
 
         return $this->user() !== null;
+    }
+
+    /**
+     * Check if the authenticated user should complete two-factor authentication
+     */
+    public function shouldTwoFactor(): bool
+    {
+        $user = $this->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        // Use the last login of the user, but default to now given it's already run through auth middleware
+        $lastLoginAt = $user['last_login_at'] ? now()->parse($user['last_login_at']) : now();
+
+        $twoFactorExpiresAt = $user['two_factor_expires_at'] ? now()->parse($user['two_factor_expires_at']) : null;
+
+        // If the user has never completed 2FA, they should do so now
+        if (! $twoFactorExpiresAt) {
+            return true;
+        }
+
+        // If it's a recent login and the two factor has expired, the user should complete 2FA
+        if ($lastLoginAt->gt($twoFactorExpiresAt)) {
+            return true;
+        }
+
+        // Don't interrupt an active session
+        return false;
     }
 
     /**
