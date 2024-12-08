@@ -59,6 +59,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             return false;
         }
 
+        // Don't interrupt an impersonation session
+        if (session('impersonate_id')) {
+            return false;
+        }
+
         // Use the last login of the user, but default to now given it's already run through auth middleware
         $lastLoginAt = $user['last_login_at'] ? now()->parse($user['last_login_at']) : now();
 
