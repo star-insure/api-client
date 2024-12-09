@@ -3,6 +3,7 @@
 namespace StarInsure\Api;
 
 use StarInsure\Api\Http\Service\UserMemoizationService;
+use StarInsure\Api\Models\StarUser;
 
 class StarAuthManager extends \Illuminate\Auth\AuthManager
 {
@@ -24,7 +25,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     /**
      * The authenticated user
      */
-    public function user(?bool $bypassCache = false)
+    public function user(?bool $bypassCache = false): StarUser
     {
         $data = $this->memoizationService->getData(
             token: $this->apiToken,
@@ -32,7 +33,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             bypass: $bypassCache,
         );
 
-        return $data;
+        return new StarUser($data);
     }
 
     /**
@@ -97,7 +98,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     public function groups()
     {
         if ($user = $this->user()) {
-            if (! array_key_exists('groups', $user)) {
+            if (! array_key_exists('groups', $user->toArray())) {
                 $user = $this->user(bypassCache: true);
             }
 
