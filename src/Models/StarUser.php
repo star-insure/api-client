@@ -11,9 +11,11 @@ class StarUser extends Authenticatable implements ArrayAccess, Arrayable
 {
     protected $guarded = [];
 
-    public function __construct(array $data)
+    public function __construct(?array $data = null)
     {
-        $this->setRawAttributes($data);
+        if ($data) {
+            $this->setRawAttributes($data);
+        }
     }
 
     public function getAuthIdentifierName()
