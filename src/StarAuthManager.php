@@ -60,6 +60,11 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
             return false;
         }
 
+        // Allow environment configuration
+        if (config('star.2fa_enabled') !== true) {
+            return false;
+        }
+
         // Don't interrupt an impersonation session
         if (session('impersonate_id')) {
             return false;

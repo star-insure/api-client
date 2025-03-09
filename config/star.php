@@ -39,4 +39,9 @@ return [
      * Secret of the client app we're using
      */
     'client_secret' => env('SIS_API_CLIENT_SECRET', 'secret'),
+
+    /**
+     * Toggle two-factor authentication for this application
+     */
+    '2fa_enabled' => env('SIS_2FA_ENABLED', false),
 ];
