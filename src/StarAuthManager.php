@@ -16,10 +16,20 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
         protected ?UserMemoizationService $memoizationService = null
     ) {
         $this->apiUrl ??= config('star.api_url').'/api/'.config('star.version');
-        $this->apiToken = $apiToken ?? session('access_token') ?? request()->bearerToken();
         $this->memoizationService = $memoizationService ?? new UserMemoizationService;
 
         parent::__construct($app);
+    }
+
+    /**
+     * Lazily resolve the API token from session or request.
+     * This must be called at request time (not construction time) because
+     * the session is not available when the singleton is first instantiated.
+     * Fixes other libraries that call add user context (like Nightwatch/Telescope)
+     */
+    protected function getApiToken(): ?string
+    {
+        return $this->apiToken ?? session('access_token') ?? request()->bearerToken();
     }
 
     /**
@@ -28,7 +38,7 @@ class StarAuthManager extends \Illuminate\Auth\AuthManager
     public function user(?bool $bypassCache = false): StarUser
     {
         $data = $this->memoizationService->getData(
-            token: $this->apiToken,
+            token: $this->getApiToken(),
             apiUrl: $this->apiUrl,
             bypass: $bypassCache,
         );
